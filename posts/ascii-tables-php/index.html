@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Hugo 0.68.3" />
 
-  <title>ASCII Tables PHP &middot; My Blog</title>
+  <title>How to Create ASCII Tables in PHP &middot; My Blog</title>
 
   <meta name="description" content="" />
 
@@ -17,7 +17,7 @@
 
   
   <meta property="og:type" content="blog"/>
-  <meta property="og:site_name" content="My Blog"/><meta property="og:title" content="ASCII Tables PHP"/>
+  <meta property="og:site_name" content="My Blog"/><meta property="og:title" content="How to Create ASCII Tables in PHP"/>
   <meta property="og:url" content="https://emptyheap2019.github.io/posts/ascii-tables-php/"/>
   <meta property="og:description" content="Creating a table of rows and columns in ASCII where each column may need resized as the data in each cell changes can be painful."/>
 
@@ -122,100 +122,93 @@
 
   <main class="content container">
   <div class="post">
-  <h1>ASCII Tables PHP</h1>
+  <h1>How to Create ASCII Tables in PHP</h1>
 
   <div class="post-date">
-    <time datetime="2020-03-29T00:15:33-0400">Mar 29, 2020</time> · 6 min read
+    <time datetime="2020-03-29T00:15:33-0400">Mar 29, 2020</time> · 4 min read
   </div>
 
   <p>Creating a table of rows and columns in ASCII where each column may need resized as the data in each cell changes can be painful. So I wrote a simple snippet in PHP that can read a CSV file, and print out the table in plain ASCII for markdown. You can use this as just a <code>&lt;pre&gt;</code> block or for markdown tables.</p>
 <p>First the function that takes in an array of rows and columns from a CSV and returns a string formatted to fit the ASCII table&rsquo;s maximum column width.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">function asciiTable(Array $rows, Int $padSize = 1, String $justify = &#34;right&#34;, String $separator = &#34;|&#34;, String $border = &#34;-&#34;): String {
-    if ($justify === &#34;center&#34;) {
-        $justify = STR_PAD_BOTH;
-    } elseif ($justify === &#34;left&#34;) {
-        $justify = STR_PAD_LEFT;
-    } else {
-        $justify = STR_PAD_RIGHT;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">asciiTable</span>(<span style="color:#66d9ef">Array</span> $rows, <span style="color:#a6e22e">Int</span> $padSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">String</span> $justify <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;right&#34;</span>, <span style="color:#a6e22e">String</span> $separator <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;|&#34;</span>, <span style="color:#a6e22e">String</span> $border <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;-&#34;</span>)<span style="color:#f92672">:</span> <span style="color:#a6e22e">String</span> {
+    <span style="color:#66d9ef">if</span> ($justify <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;center&#34;</span>) {
+        $justify <span style="color:#f92672">=</span> <span style="color:#a6e22e">STR_PAD_BOTH</span>;
+    } <span style="color:#66d9ef">elseif</span> ($justify <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;left&#34;</span>) {
+        $justify <span style="color:#f92672">=</span> <span style="color:#a6e22e">STR_PAD_LEFT</span>;
+    } <span style="color:#66d9ef">else</span> {
+        $justify <span style="color:#f92672">=</span> <span style="color:#a6e22e">STR_PAD_RIGHT</span>;
     }
-    $body = &#34;&#34;;
-    $headers = reset($rows); // copy the header columns
-    $sheet = $rows;
-    $sizes = array_map(function($row) { return array_map(function($col) { return strlen($col); }, $row); }, $sheet);
-    foreach ($headers as $column =&gt; $data) {
-        $colSize[$column] = max(array_column($sizes, $column));
+    $body <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>;
+    $headers <span style="color:#f92672">=</span> <span style="color:#a6e22e">reset</span>($rows); <span style="color:#75715e">// copy the header columns
+</span><span style="color:#75715e"></span>    $sheet <span style="color:#f92672">=</span> $rows;
+    $sizes <span style="color:#f92672">=</span> <span style="color:#a6e22e">array_map</span>(<span style="color:#66d9ef">function</span>($row) { <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">array_map</span>(<span style="color:#66d9ef">function</span>($col) { <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">strlen</span>($col); }, $row); }, $sheet);
+    <span style="color:#66d9ef">foreach</span> ($headers <span style="color:#66d9ef">as</span> $column <span style="color:#f92672">=&gt;</span> $data) {
+        $colSize[$column] <span style="color:#f92672">=</span> <span style="color:#a6e22e">max</span>(<span style="color:#a6e22e">array_column</span>($sizes, $column));
     }
-    foreach($sheet as $row =&gt; $columns) {
-        $last = count($columns) - 1;
-        $line = &#34;&#34;;
-        foreach ($columns as $n =&gt; $column) {
-            $line .= $separator .
-                     str_pad(
-                     str_repeat(&#34; &#34;, $padSize) .
-                         $column . str_repeat(&#34; &#34;, $padSize),
-                         $colSize[$n] + ($padSize * 2),
-                         &#34; &#34;,
+    <span style="color:#66d9ef">foreach</span>($sheet <span style="color:#66d9ef">as</span> $row <span style="color:#f92672">=&gt;</span> $columns) {
+        $last <span style="color:#f92672">=</span> <span style="color:#a6e22e">count</span>($columns) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+        $line <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>;
+        <span style="color:#66d9ef">foreach</span> ($columns <span style="color:#66d9ef">as</span> $n <span style="color:#f92672">=&gt;</span> $column) {
+            $line <span style="color:#f92672">.=</span> $separator <span style="color:#f92672">.</span>
+                     <span style="color:#a6e22e">str_pad</span>(
+                     <span style="color:#a6e22e">str_repeat</span>(<span style="color:#e6db74">&#34; &#34;</span>, $padSize) <span style="color:#f92672">.</span>
+                         $column <span style="color:#f92672">.</span> <span style="color:#a6e22e">str_repeat</span>(<span style="color:#e6db74">&#34; &#34;</span>, $padSize),
+                         $colSize[$n] <span style="color:#f92672">+</span> ($padSize <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>),
+                         <span style="color:#e6db74">&#34; &#34;</span>,
                          $justify
-                     ) .
-                     ($n === $last ? $separator : &#34;&#34;);
+                     ) <span style="color:#f92672">.</span>
+                     ($n <span style="color:#f92672">===</span> $last <span style="color:#f92672">?</span> $separator <span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;&#34;</span>);
         }
-        $body .= &#34;$line\n&#34;;
-        if (!$row) {
-            $line = &#34;&#34;;
-            foreach ($columns as $n =&gt; $column) {
-                $column = str_repeat($border, $colSize[$n] + ($padSize * 2));
-                $line .= $separator . str_pad($column, $colSize[$n] + ($padSize * 2)) . ($n === $last ? $separator : &#34;&#34;);
+        $body <span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">$line\n</span><span style="color:#e6db74">&#34;</span>;
+        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>$row) {
+            $line <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>;
+            <span style="color:#66d9ef">foreach</span> ($columns <span style="color:#66d9ef">as</span> $n <span style="color:#f92672">=&gt;</span> $column) {
+                $column <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_repeat</span>($border, $colSize[$n] <span style="color:#f92672">+</span> ($padSize <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>));
+                $line <span style="color:#f92672">.=</span> $separator <span style="color:#f92672">.</span> <span style="color:#a6e22e">str_pad</span>($column, $colSize[$n] <span style="color:#f92672">+</span> ($padSize <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>)) <span style="color:#f92672">.</span> ($n <span style="color:#f92672">===</span> $last <span style="color:#f92672">?</span> $separator <span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;&#34;</span>);
             }
-            $body .= &#34;$line\n&#34;;
+            $body <span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">$line\n</span><span style="color:#e6db74">&#34;</span>;
         }
     }
     
-    return $body;
+    <span style="color:#66d9ef">return</span> $body;
 }
 </code></pre></div><p>Here&rsquo;s the part that reads in the CSV file and prints out the ASCII table.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">if (($handle = fopen(&#34;test.csv&#34;, &#34;r&#34;)) !== FALSE) {
-    while (($data = fgetcsv($handle, 1000, &#34;,&#34;)) !== FALSE) {
-        $rows[] = $data;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+<span style="color:#66d9ef">if</span> (($handle <span style="color:#f92672">=</span> <span style="color:#a6e22e">fopen</span>(<span style="color:#e6db74">&#34;test.csv&#34;</span>, <span style="color:#e6db74">&#34;r&#34;</span>)) <span style="color:#f92672">!==</span> <span style="color:#66d9ef">FALSE</span>) {
+    <span style="color:#66d9ef">while</span> (($data <span style="color:#f92672">=</span> <span style="color:#a6e22e">fgetcsv</span>($handle, <span style="color:#ae81ff">1000</span>, <span style="color:#e6db74">&#34;,&#34;</span>)) <span style="color:#f92672">!==</span> <span style="color:#66d9ef">FALSE</span>) {
+        $rows[] <span style="color:#f92672">=</span> $data;
     }
-    fclose($handle);
+    <span style="color:#a6e22e">fclose</span>($handle);
 }
 
 
-echo asciiTable($rows);
+<span style="color:#66d9ef">echo</span> <span style="color:#a6e22e">asciiTable</span>($rows);
 </code></pre></div><p>Here&rsquo;s what the output would look like. I used some historical weather data for demonstration.</p>
-<pre><code>| STATION     | NAME                   | LATITUDE | LONGITUDE  | ELEVATION | DATE    | PRCP  | PSUN | SNOW | TAVG | TMAX | TMIN |
-|-------------|------------------------|----------|------------|-----------|---------|-------|------|------|------|------|------|
-| US1NJBG0023 | OAKLAND 0.9 SSE, NJ US | 41.01905 | -74.233383 | 149.4     | 2019-02 | 83.8  |      | 89   |      |      |      |
-| US1NJBG0023 | OAKLAND 0.9 SSE, NJ US | 41.01905 | -74.233383 | 149.4     | 2019-03 | 93.0  |      | 356  |      |      |      |
-| US1NJBG0023 | OAKLAND 0.9 SSE, NJ US | 41.01905 | -74.233383 | 149.4     | 2019-04 | 121.1 |      |      |      |      |      |
-| US1NJBG0023 | OAKLAND 0.9 SSE, NJ US | 41.01905 | -74.233383 | 149.4     | 2019-05 | 216.3 |      |      |      |      |      |
-| US1NJBG0023 | OAKLAND 0.9 SSE, NJ US | 41.01905 | -74.233383 | 149.4     | 2019-06 | 133.8 |      |      |      |      |      |
-| US1NJBG0023 | OAKLAND 0.9 SSE, NJ US | 41.01905 | -74.233383 | 149.4     | 2019-07 | 246.3 |      |      |      |      |      |
-| US1NJBG0023 | OAKLAND 0.9 SSE, NJ US | 41.01905 | -74.233383 | 149.4     | 2019-09 | 13.7  |      |      |      |      |      |
-| US1NJBG0023 | OAKLAND 0.9 SSE, NJ US | 41.01905 | -74.233383 | 149.4     | 2019-10 | 186.8 |      |      |      |      |      |
-| US1NJBG0023 | OAKLAND 0.9 SSE, NJ US | 41.01905 | -74.233383 | 149.4     | 2019-11 | 81.1  |      |      |      |      |      |
-| US1NJBG0023 | OAKLAND 0.9 SSE, NJ US | 41.01905 | -74.233383 | 149.4     | 2019-12 | 171.7 |      | 267  |      |      |      |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-01 | 140.8 |      | 13   | -1.6 | 3.1  | -6.2 |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-02 | 81.9  |      | 102  | -0.2 | 4.3  | -4.7 |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-03 | 92.8  |      | 140  | 2.3  | 7.6  | -3.0 |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-04 | 129.8 |      | 0    | 11.2 | 16.7 | 5.8  |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-05 | 239.2 |      | 0    | 15.8 | 20.8 | 10.9 |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-06 | 162.0 |      | 0    | 20.5 | 26.2 | 14.9 |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-07 | 182.0 |      | 0    | 24.9 | 30.6 | 19.3 |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-08 | 118.8 |      | 0    | 22.7 | 28.4 | 17.0 |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-09 | 25.2  |      | 0    | 19.2 | 25.2 | 13.1 |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-10 | 196.1 |      | 0    | 13.4 | 18.1 | 8.6  |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-11 | 78.6  |      | 0    | 4.3  | 9.5  | -0.9 |
-| USC00280907 | BOONTON 1 SE, NJ US    | 40.89174 | -74.39635  | 85.3      | 2019-12 | 151.7 |      | 178  | 0.8  | 4.9  | -3.4 |
+<pre><code>| ELEVATION | DATE    | PRCP  | PSUN | SNOW | TAVG | TMAX | TMIN |
+|-----------|---------|-------|------|------|------|------|------|
+| 149.4     | 2019-02 | 83.8  |      | 89   |      |      |      |
+| 149.4     | 2019-03 | 93.0  |      | 356  |      |      |      |
+| 149.4     | 2019-04 | 121.1 |      |      |      |      |      |
+| 149.4     | 2019-05 | 216.3 |      |      |      |      |      |
+| 149.4     | 2019-06 | 133.8 |      |      |      |      |      |
+| 149.4     | 2019-07 | 246.3 |      |      |      |      |      |
+| 149.4     | 2019-09 | 13.7  |      |      |      |      |      |
+| 149.4     | 2019-10 | 186.8 |      |      |      |      |      |
+| 149.4     | 2019-11 | 81.1  |      |      |      |      |      |
+| 149.4     | 2019-12 | 171.7 |      | 267  |      |      |      |
+| 85.3      | 2019-01 | 140.8 |      | 13   | -1.6 | 3.1  | -6.2 |
+| 85.3      | 2019-02 | 81.9  |      | 102  | -0.2 | 4.3  | -4.7 |
+| 85.3      | 2019-03 | 92.8  |      | 140  | 2.3  | 7.6  | -3.0 |
+| 85.3      | 2019-04 | 129.8 |      | 0    | 11.2 | 16.7 | 5.8  |
+| 85.3      | 2019-05 | 239.2 |      | 0    | 15.8 | 20.8 | 10.9 |
+| 85.3      | 2019-06 | 162.0 |      | 0    | 20.5 | 26.2 | 14.9 |
+| 85.3      | 2019-07 | 182.0 |      | 0    | 24.9 | 30.6 | 19.3 |
 </code></pre>
 <p>Which gives you perfect markdown that looks good both in markdown and markup!</p>
 <table>
 <thead>
 <tr>
-<th>STATION</th>
-<th>NAME</th>
-<th>LATITUDE</th>
-<th>LONGITUDE</th>
 <th>ELEVATION</th>
 <th>DATE</th>
 <th>PRCP</th>
@@ -228,10 +221,6 @@ echo asciiTable($rows);
 </thead>
 <tbody>
 <tr>
-<td>US1NJBG0023</td>
-<td>OAKLAND 0.9 SSE, NJ US</td>
-<td>41.01905</td>
-<td>-74.233383</td>
 <td>149.4</td>
 <td>2019-02</td>
 <td>83.8</td>
@@ -242,10 +231,6 @@ echo asciiTable($rows);
 <td></td>
 </tr>
 <tr>
-<td>US1NJBG0023</td>
-<td>OAKLAND 0.9 SSE, NJ US</td>
-<td>41.01905</td>
-<td>-74.233383</td>
 <td>149.4</td>
 <td>2019-03</td>
 <td>93.0</td>
@@ -256,10 +241,6 @@ echo asciiTable($rows);
 <td></td>
 </tr>
 <tr>
-<td>US1NJBG0023</td>
-<td>OAKLAND 0.9 SSE, NJ US</td>
-<td>41.01905</td>
-<td>-74.233383</td>
 <td>149.4</td>
 <td>2019-04</td>
 <td>121.1</td>
@@ -270,10 +251,6 @@ echo asciiTable($rows);
 <td></td>
 </tr>
 <tr>
-<td>US1NJBG0023</td>
-<td>OAKLAND 0.9 SSE, NJ US</td>
-<td>41.01905</td>
-<td>-74.233383</td>
 <td>149.4</td>
 <td>2019-05</td>
 <td>216.3</td>
@@ -284,10 +261,6 @@ echo asciiTable($rows);
 <td></td>
 </tr>
 <tr>
-<td>US1NJBG0023</td>
-<td>OAKLAND 0.9 SSE, NJ US</td>
-<td>41.01905</td>
-<td>-74.233383</td>
 <td>149.4</td>
 <td>2019-06</td>
 <td>133.8</td>
@@ -298,10 +271,6 @@ echo asciiTable($rows);
 <td></td>
 </tr>
 <tr>
-<td>US1NJBG0023</td>
-<td>OAKLAND 0.9 SSE, NJ US</td>
-<td>41.01905</td>
-<td>-74.233383</td>
 <td>149.4</td>
 <td>2019-07</td>
 <td>246.3</td>
@@ -312,10 +281,6 @@ echo asciiTable($rows);
 <td></td>
 </tr>
 <tr>
-<td>US1NJBG0023</td>
-<td>OAKLAND 0.9 SSE, NJ US</td>
-<td>41.01905</td>
-<td>-74.233383</td>
 <td>149.4</td>
 <td>2019-09</td>
 <td>13.7</td>
@@ -326,10 +291,6 @@ echo asciiTable($rows);
 <td></td>
 </tr>
 <tr>
-<td>US1NJBG0023</td>
-<td>OAKLAND 0.9 SSE, NJ US</td>
-<td>41.01905</td>
-<td>-74.233383</td>
 <td>149.4</td>
 <td>2019-10</td>
 <td>186.8</td>
@@ -340,10 +301,6 @@ echo asciiTable($rows);
 <td></td>
 </tr>
 <tr>
-<td>US1NJBG0023</td>
-<td>OAKLAND 0.9 SSE, NJ US</td>
-<td>41.01905</td>
-<td>-74.233383</td>
 <td>149.4</td>
 <td>2019-11</td>
 <td>81.1</td>
@@ -354,10 +311,6 @@ echo asciiTable($rows);
 <td></td>
 </tr>
 <tr>
-<td>US1NJBG0023</td>
-<td>OAKLAND 0.9 SSE, NJ US</td>
-<td>41.01905</td>
-<td>-74.233383</td>
 <td>149.4</td>
 <td>2019-12</td>
 <td>171.7</td>
@@ -368,10 +321,6 @@ echo asciiTable($rows);
 <td></td>
 </tr>
 <tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
 <td>85.3</td>
 <td>2019-01</td>
 <td>140.8</td>
@@ -382,10 +331,6 @@ echo asciiTable($rows);
 <td>-6.2</td>
 </tr>
 <tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
 <td>85.3</td>
 <td>2019-02</td>
 <td>81.9</td>
@@ -396,10 +341,6 @@ echo asciiTable($rows);
 <td>-4.7</td>
 </tr>
 <tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
 <td>85.3</td>
 <td>2019-03</td>
 <td>92.8</td>
@@ -410,10 +351,6 @@ echo asciiTable($rows);
 <td>-3.0</td>
 </tr>
 <tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
 <td>85.3</td>
 <td>2019-04</td>
 <td>129.8</td>
@@ -424,10 +361,6 @@ echo asciiTable($rows);
 <td>5.8</td>
 </tr>
 <tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
 <td>85.3</td>
 <td>2019-05</td>
 <td>239.2</td>
@@ -438,10 +371,6 @@ echo asciiTable($rows);
 <td>10.9</td>
 </tr>
 <tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
 <td>85.3</td>
 <td>2019-06</td>
 <td>162.0</td>
@@ -452,10 +381,6 @@ echo asciiTable($rows);
 <td>14.9</td>
 </tr>
 <tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
 <td>85.3</td>
 <td>2019-07</td>
 <td>182.0</td>
@@ -464,76 +389,6 @@ echo asciiTable($rows);
 <td>24.9</td>
 <td>30.6</td>
 <td>19.3</td>
-</tr>
-<tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
-<td>85.3</td>
-<td>2019-08</td>
-<td>118.8</td>
-<td></td>
-<td>0</td>
-<td>22.7</td>
-<td>28.4</td>
-<td>17.0</td>
-</tr>
-<tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
-<td>85.3</td>
-<td>2019-09</td>
-<td>25.2</td>
-<td></td>
-<td>0</td>
-<td>19.2</td>
-<td>25.2</td>
-<td>13.1</td>
-</tr>
-<tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
-<td>85.3</td>
-<td>2019-10</td>
-<td>196.1</td>
-<td></td>
-<td>0</td>
-<td>13.4</td>
-<td>18.1</td>
-<td>8.6</td>
-</tr>
-<tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
-<td>85.3</td>
-<td>2019-11</td>
-<td>78.6</td>
-<td></td>
-<td>0</td>
-<td>4.3</td>
-<td>9.5</td>
-<td>-0.9</td>
-</tr>
-<tr>
-<td>USC00280907</td>
-<td>BOONTON 1 SE, NJ US</td>
-<td>40.89174</td>
-<td>-74.39635</td>
-<td>85.3</td>
-<td>2019-12</td>
-<td>151.7</td>
-<td></td>
-<td>178</td>
-<td>0.8</td>
-<td>4.9</td>
-<td>-3.4</td>
 </tr>
 </tbody>
 </table>
