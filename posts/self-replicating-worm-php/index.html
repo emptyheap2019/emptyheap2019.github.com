@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Hugo 0.68.3" />
 
-  <title>My Blog</title>
+  <title>How to write a Self Replicating Worm in PHP &middot; My Blog</title>
 
-  <meta name="description" content="Hi, welcome to the place where I write stuff on the Internet!" />
+  <meta name="description" content="" />
 
   
   <meta property="og:locale" content="en-us"/>
@@ -17,10 +17,9 @@
 
   
   <meta property="og:type" content="blog"/>
-  <meta property="og:site_name" content="My Blog"/>
-  <meta property="og:title" content="My Blog"/>
-  <meta property="og:url" content="https://emptyheap2019.github.io/"/>
-  <meta property="og:description" content="Hi, welcome to the place where I write stuff on the Internet!"/>
+  <meta property="og:site_name" content="My Blog"/><meta property="og:title" content="How to write a Self Replicating Worm in PHP"/>
+  <meta property="og:url" content="https://emptyheap2019.github.io/posts/self-replicating-worm-php/"/>
+  <meta property="og:description" content="How to write a Self Replicating Worm in PHP Self replicating code is a fun coding excersize to flex the old brain muscle."/>
 
   <script type="application/ld+json">
   {
@@ -69,7 +68,6 @@
   <link rel="shortcut icon" href="/favicon.png">
 
   
-  <link href="https://emptyheap2019.github.io/index.xml" rel="alternate" type="application/rss+xml" title="My Blog" />
   </head>
 <body>
   <aside class="sidebar">
@@ -123,28 +121,36 @@
 
 
   <main class="content container">
-  
-    <main aria-role="main">
-      <header class="homepage-header">
-        <h1></h1>
-        
-      </header>
-      <div class="homepage-content">
-        
-        <h1 id="welcome-to-my-blog">Welcome to my Blog!</h1>
-<p>Data goes in the <code>data/bin</code> for now.</p>
+  <div class="post">
+  <h1>How to write a Self Replicating Worm in PHP</h1>
 
-      </div>
-      <div>
-        
-            
-        
-            
-        
-            
-        
-      </div>
-    </main>
+  <div class="post-date">
+    <time datetime="2020-03-28T23:12:24-0400">Mar 28, 2020</time> · 1 min read
+  </div>
+
+  <h1 id="how-to-write-a-self-replicating-worm-in-php">How to write a Self Replicating Worm in PHP</h1>
+<p>Self replicating code is a fun coding excersize to flex the old brain muscle.</p>
+<p>Here&rsquo;s an example of a self replicating worm program, written in PHP.</p>
+<pre><code>&lt;?php
+$selfReplicatingCode = &lt;&lt;&lt;'EOL'
+&lt;?php
+$selfReplicatingCode = &lt;&lt;&lt;'EOL'
+%s
+%s
+// The worm copies itself to another file
+$copy = tempnam(__DIR__, __FILE__);
+file_put_contents($copy, file_get_contents(__FILE__));
+printf($selfReplicatingCode, $selfReplicatingCode, &quot;EOL;&quot;);
+EOL;
+// The worm copies itself to another file
+$copy = tempnam(__DIR__, __FILE__);
+file_put_contents($copy, file_get_contents(__FILE__));
+printf($selfReplicatingCode, $selfReplicatingCode, &quot;EOL;&quot;);
+</code></pre>
+<p>Basically the worm copies itself into another random file stored somewhere in your <code>/tmp</code> directory. It doesn&rsquo;t do anything useful or malicious. Just for learning purposes.</p>
+
+</div>
+
 
   </main>
 

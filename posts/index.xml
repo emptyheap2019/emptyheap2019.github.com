@@ -6,10 +6,19 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 28 Mar 2020 22:44:43 -0400</lastBuildDate>
+    <lastBuildDate>Sat, 28 Mar 2020 23:12:24 -0400</lastBuildDate>
     
 	<atom:link href="https://emptyheap2019.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How to write a Self Replicating Worm in PHP</title>
+      <link>https://emptyheap2019.github.io/posts/self-replicating-worm-php/</link>
+      <pubDate>Sat, 28 Mar 2020 23:12:24 -0400</pubDate>
+      
+      <guid>https://emptyheap2019.github.io/posts/self-replicating-worm-php/</guid>
+      <description>How to write a Self Replicating Worm in PHP Self replicating code is a fun coding excersize to flex the old brain muscle.</description>
+    </item>
     
     <item>
       <title>Poker in PHP</title>
