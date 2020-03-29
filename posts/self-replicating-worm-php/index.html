@@ -130,23 +130,22 @@
 
   <p>Self replicating code is a fun coding excersize to flex the old brain muscle.</p>
 <p>Here&rsquo;s an example of a self replicating worm program, written in PHP.</p>
-<pre><code>&lt;?php
-$selfReplicatingCode = &lt;&lt;&lt;'EOL'
-&lt;?php
-$selfReplicatingCode = &lt;&lt;&lt;'EOL'
-%s
-%s
-// The worm copies itself to another file
-$copy = tempnam(__DIR__, __FILE__);
-file_put_contents($copy, file_get_contents(__FILE__));
-printf($selfReplicatingCode, $selfReplicatingCode, &quot;EOL;&quot;);
-EOL;
-// The worm copies itself to another file
-$copy = tempnam(__DIR__, __FILE__);
-file_put_contents($copy, file_get_contents(__FILE__));
-printf($selfReplicatingCode, $selfReplicatingCode, &quot;EOL;&quot;);
-</code></pre>
-<p>Basically the worm copies itself into another random file stored somewhere in your <code>/tmp</code> directory. It doesn&rsquo;t do anything useful or malicious. Just for learning purposes.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">    <span style="color:#75715e">&lt;?php</span>
+    $selfReplicatingCode <span style="color:#f92672">=</span> <span style="color:#e6db74">&lt;&lt;&lt;&#39;</span><span style="color:#e6db74">EOL</span><span style="color:#e6db74">&#39;
+</span><span style="color:#e6db74">    &lt;?php
+</span><span style="color:#e6db74">    $selfReplicatingCode = &lt;&lt;&lt;&#39;EOL&#39;
+</span><span style="color:#e6db74">    %s
+</span><span style="color:#e6db74">    %s
+</span><span style="color:#e6db74">    // The worm copies itself to another file
+</span><span style="color:#e6db74">    $copy = tempnam(__DIR__, __FILE__);
+</span><span style="color:#e6db74">    file_put_contents($copy, file_get_contents(__FILE__));
+</span><span style="color:#e6db74">    printf($selfReplicatingCode, $selfReplicatingCode, &#34;EOL;&#34;);
+</span><span style="color:#e6db74">    </span><span style="color:#e6db74">EOL</span>;
+    <span style="color:#75715e">// The worm copies itself to another file
+</span><span style="color:#75715e"></span>    $copy <span style="color:#f92672">=</span> <span style="color:#a6e22e">tempnam</span>(<span style="color:#66d9ef">__DIR__</span>, <span style="color:#66d9ef">__FILE__</span>);
+    <span style="color:#a6e22e">file_put_contents</span>($copy, <span style="color:#a6e22e">file_get_contents</span>(<span style="color:#66d9ef">__FILE__</span>));
+    <span style="color:#a6e22e">printf</span>($selfReplicatingCode, $selfReplicatingCode, <span style="color:#e6db74">&#34;EOL;&#34;</span>);
+</code></pre></div><p>Basically the worm copies itself into another random file stored somewhere in your <code>/tmp</code> directory. It doesn&rsquo;t do anything useful or malicious. Just for learning purposes.</p>
 
 </div>
 
