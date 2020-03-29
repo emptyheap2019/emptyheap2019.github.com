@@ -6,18 +6,18 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 27 Mar 2020 02:09:02 -0400</lastBuildDate>
+    <lastBuildDate>Sat, 28 Mar 2020 22:44:43 -0400</lastBuildDate>
     
 	<atom:link href="https://emptyheap2019.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>About</title>
-      <link>https://emptyheap2019.github.io/posts/about/</link>
-      <pubDate>Fri, 27 Mar 2020 02:09:02 -0400</pubDate>
+      <title>Poker in PHP</title>
+      <link>https://emptyheap2019.github.io/posts/poker-in-php/</link>
+      <pubDate>Sat, 28 Mar 2020 22:44:43 -0400</pubDate>
       
-      <guid>https://emptyheap2019.github.io/posts/about/</guid>
-      <description>One day I shall write something here about myself for you to read&amp;hellip;</description>
+      <guid>https://emptyheap2019.github.io/posts/poker-in-php/</guid>
+      <description>Texas Holdem in PHP The poker game of Texas Hold&amp;rsquo;em is one of the most popular card games on earth.</description>
     </item>
     
   </channel>
