@@ -1,0 +1,29 @@
+---
+title: "How to write a Self Replicating Worm in PHP"
+date: 2020-03-28T23:12:24-04:00
+draft: true
+---
+
+# How to write a Self Replicating Worm in PHP
+
+Self replicating code is a fun coding excersize to flex the old brain muscle.
+
+Here's an example of a self replicating worm program, written in PHP.
+
+    <?php
+    $selfReplicatingCode = <<<'EOL'
+    <?php
+    $selfReplicatingCode = <<<'EOL'
+    %s
+    %s
+    // The worm copies itself to another file
+    $copy = tempnam(__DIR__, __FILE__);
+    file_put_contents($copy, file_get_contents(__FILE__));
+    printf($selfReplicatingCode, $selfReplicatingCode, "EOL;");
+    EOL;
+    // The worm copies itself to another file
+    $copy = tempnam(__DIR__, __FILE__);
+    file_put_contents($copy, file_get_contents(__FILE__));
+    printf($selfReplicatingCode, $selfReplicatingCode, "EOL;");
+
+Basically the worm copies itself into another random file stored somewhere in your `/tmp` directory. It doesn't do anything useful or malicious. Just for learning purposes.
