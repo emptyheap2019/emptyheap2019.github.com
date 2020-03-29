@@ -6,38 +6,10 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 28 Mar 2020 22:35:59 -0400</lastBuildDate>
+    <lastBuildDate>Fri, 27 Mar 2020 02:09:02 -0400</lastBuildDate>
     
 	<atom:link href="https://emptyheap2019.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Some Info</title>
-      <link>https://emptyheap2019.github.io/posts/some-info/</link>
-      <pubDate>Sat, 28 Mar 2020 22:35:59 -0400</pubDate>
-      
-      <guid>https://emptyheap2019.github.io/posts/some-info/</guid>
-      <description>if ($foo-&amp;gt;bar() == &amp;quot;quix&amp;quot;) { doStuff(); } restart(true);  This is some inline code() here.</description>
-    </item>
-    
-    <item>
-      <title>Codeme</title>
-      <link>https://emptyheap2019.github.io/posts/codeme/</link>
-      <pubDate>Sat, 28 Mar 2020 22:31:43 -0400</pubDate>
-      
-      <guid>https://emptyheap2019.github.io/posts/codeme/</guid>
-      <description>if ($this-&amp;gt;foo == &amp;quot;bar&amp;quot;) { $baz(); }  THis is inline [&amp;quot;code&amp;quot;, 1, 2, true] and quix() stuff.</description>
-    </item>
-    
-    <item>
-      <title>Code</title>
-      <link>https://emptyheap2019.github.io/posts/code/</link>
-      <pubDate>Fri, 27 Mar 2020 02:36:13 -0400</pubDate>
-      
-      <guid>https://emptyheap2019.github.io/posts/code/</guid>
-      <description>This is some text.
-// This is some code $foo = new Bar; echo $foo-&amp;gt;getBaz(&amp;quot;quix&amp;quot;);  Title Info goes here and there is no other thing &amp;ndash;that&amp;ndash; is light() of that?</description>
-    </item>
     
     <item>
       <title>About</title>
@@ -46,16 +18,6 @@
       
       <guid>https://emptyheap2019.github.io/posts/about/</guid>
       <description>One day I shall write something here about myself for you to read&amp;hellip;</description>
-    </item>
-    
-    <item>
-      <title>My First Post</title>
-      <link>https://emptyheap2019.github.io/posts/my-first-post/</link>
-      <pubDate>Fri, 27 Mar 2020 01:17:55 -0400</pubDate>
-      
-      <guid>https://emptyheap2019.github.io/posts/my-first-post/</guid>
-      <description>This is my first post.
-It shall not be my last.</description>
     </item>
     
   </channel>
