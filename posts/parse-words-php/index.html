@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.68.3" />
+
+  <title>How to Parse Words in PHP &middot; My Blog</title>
+
+  <meta name="description" content="" />
+
+  
+  <meta property="og:locale" content="en-us"/>
+
+  
+  <meta property="og:image" content="https://emptyheap2019.github.io/images/profile.png">
+
+  
+  <meta property="og:type" content="blog"/>
+  <meta property="og:site_name" content="My Blog"/><meta property="og:title" content="How to Parse Words in PHP"/>
+  <meta property="og:url" content="https://emptyheap2019.github.io/posts/parse-words-php/"/>
+  <meta property="og:description" content="The idea of parsing words in natural human language is not as simple as it appears to be."/>
+
+  <script type="application/ld+json">
+  {
+    "@context" : "http://schema.org",
+    "@type" : "Blog",
+    "name": "My Blog",
+    "url" : "https://emptyheap2019.github.io/",
+    "image": "https://emptyheap2019.github.io/images/profile.png",
+    "description": "Hi, welcome to the place where I write stuff on the Internet!"
+  }
+  </script>
+
+  
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="https://emptyheap2019.github.io/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="https://emptyheap2019.github.io/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="https://emptyheap2019.github.io/css/hyde.css">
+
+  
+
+
+  
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="https://emptyheap2019.github.io/images/profile.png" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>My Blog</h1>
+
+      
+      <p class="lead">Hi, welcome to the place where I write stuff on the Internet!</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://emptyheap2019.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/posts/"> Posts </a>
+        </li><li>
+          <a href="/about/"> About </a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="#" rel="me" title="Linkedin">
+        <i class="fab fa-linkedin" aria-hidden="true"></i>
+      </a>
+      
+      <a href="#" rel="me" title="GitHub">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+      <a href="#" rel="me" title="Twitter">
+        <i class="fab fa-twitter" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>How to Parse Words in PHP</h1>
+
+  <div class="post-date">
+    <time datetime="2020-03-29T00:22:28-0400">Mar 29, 2020</time> · 3 min read
+  </div>
+
+  <p>The idea of parsing words in natural human language is not as simple as it appears to be. Simply doing <code>explode(&quot; &quot;, $text)</code> won&rsquo;t work as well as you&rsquo;d hope on most corpus.</p>
+<p>For example, consider the string <code>&quot;Hello PHP!&quot;</code>. Here we&rsquo;d get two words: <code>&quot;Hello&quot;</code> and <code>&quot;PHP!&quot;</code>, but <code>&quot;PHP!&quot;</code> is not a word; <code>&quot;PHP&quot;</code> is. You&rsquo;d think, <em>OK we can simply trim punctuation</em>. Though that too doesn&rsquo;t work the way you&rsquo;d expect. Consider the string <code>&quot;There are many A.I. programs for pattern recognition.&quot;</code> where <code>&quot;A.I.&quot;</code> is actually a valid word that contains punctuation. Though the punctuation is considered to be a part of the word itself (<em>as an abbreviation</em>). This type of complexity goes on and on with many rules and exceptions on how exactly to extract valid words from a text.</p>
+<p>So how do we do it right?</p>
+<p>Well, it turns out there is actually a body of standards that addresses this problem for several languages. It&rsquo;s called the <a href="https://unicode.org/reports/tr29/">Unicode Standard for text segmentation</a> or <em>UAX #29</em> for short. It turns out it&rsquo;s already implemented in libicu, which PHP implements as the <strong>Intl</strong> extension. So we can use it in PHP to do stuff like this:</p>
+<p>$text = &ldquo;English is a West Germanic language that was first spoken in early medieval England and eventually became a global lingua franca. It is named after the Angles, one of the Germanic tribes that migrated to the area of Great Britain that later took their name, as England. Both names derive from Anglia, a peninsula in the Baltic Sea. The language is closely related to Frisian and Low Saxon, and its vocabulary has been significantly influenced by other Germanic languages, particularly Norse (a North Germanic language), and to a greater extent by Latin and French.</p>
+<p>English has developed over the course of more than 1,400 years. The earliest forms of English, a group of West Germanic (Ingvaeonic) dialects brought to Great Britain by Anglo-Saxon settlers in the 5th century, are collectively called Old English. Middle English began in the late 11th century with the Norman conquest of England; this was a period in which the language was influenced by French.&quot;;</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+$it <span style="color:#f92672">=</span> <span style="color:#a6e22e">IntlBreakIterator</span><span style="color:#f92672">::</span><span style="color:#a6e22e">createWordInstance</span>(<span style="color:#e6db74">&#34;en_US&#34;</span>);
+$it<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">setText</span>($text);
+$parts <span style="color:#f92672">=</span> $it<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">getPartsIterator</span>();
+
+$punctuation <span style="color:#f92672">=</span> [
+        <span style="color:#a6e22e">IntlChar</span><span style="color:#f92672">::</span><span style="color:#a6e22e">CHAR_CATEGORY_DASH_PUNCTUATION</span>,
+        <span style="color:#a6e22e">IntlChar</span><span style="color:#f92672">::</span><span style="color:#a6e22e">CHAR_CATEGORY_START_PUNCTUATION</span>,
+        <span style="color:#a6e22e">IntlChar</span><span style="color:#f92672">::</span><span style="color:#a6e22e">CHAR_CATEGORY_END_PUNCTUATION</span>,
+        <span style="color:#a6e22e">IntlChar</span><span style="color:#f92672">::</span><span style="color:#a6e22e">CHAR_CATEGORY_CONNECTOR_PUNCTUATION</span>,
+        <span style="color:#a6e22e">IntlChar</span><span style="color:#f92672">::</span><span style="color:#a6e22e">CHAR_CATEGORY_OTHER_PUNCTUATION</span>,
+        <span style="color:#a6e22e">IntlChar</span><span style="color:#f92672">::</span><span style="color:#a6e22e">CHAR_CATEGORY_INITIAL_PUNCTUATION</span>,
+        <span style="color:#a6e22e">IntlChar</span><span style="color:#f92672">::</span><span style="color:#a6e22e">CHAR_CATEGORY_FINAL_PUNCTUATION</span>,
+    ];
+<span style="color:#66d9ef">foreach</span> ($parts <span style="color:#66d9ef">as</span> $word) {
+    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">mb_strlen</span>($word) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&amp;&amp;</span>
+        (<span style="color:#a6e22e">in_array</span>(<span style="color:#a6e22e">IntlChar</span><span style="color:#f92672">::</span><span style="color:#a6e22e">charType</span>($word), $punctuation) <span style="color:#f92672">||</span> <span style="color:#a6e22e">IntlChar</span><span style="color:#f92672">::</span><span style="color:#a6e22e">isUWhiteSpace</span>($word)))
+    {
+        <span style="color:#66d9ef">continue</span>;
+    }
+    <span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">$word\n</span><span style="color:#e6db74">&#34;</span>;
+}
+</code></pre></div><p>Notice how it gets even numbers right, like <code>1,400</code>, but is able to identify words like in the string <code>&quot;There,are&quot;</code> where it correctly parses <code>&quot;There&quot;</code> and <code>&quot;are&quot;</code> as two separate words. This same standard is similar to how your browser figures out which characters to highlight when you double click on some text. It selects the sequence of characters based on the same rules in the <code>IntlRuleBreakIterator</code> that identifies word instances.</p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div class="copyright">
+    &copy; emptyheap 2020 · 
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  
+
+  
+</body>
+</html>
