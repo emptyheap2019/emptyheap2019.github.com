@@ -6,7 +6,7 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 29 Mar 2020 00:22:28 -0400</lastBuildDate>
+    <lastBuildDate>Mon, 30 Mar 2020 00:22:28 -0400</lastBuildDate>
     
 	<atom:link href="https://emptyheap2019.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>How to Parse Words in PHP</title>
       <link>https://emptyheap2019.github.io/posts/parse-words-php/</link>
-      <pubDate>Sun, 29 Mar 2020 00:22:28 -0400</pubDate>
+      <pubDate>Mon, 30 Mar 2020 00:22:28 -0400</pubDate>
       
       <guid>https://emptyheap2019.github.io/posts/parse-words-php/</guid>
       <description>The idea of parsing words in natural human language is not as simple as it appears to be.</description>
