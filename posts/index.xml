@@ -6,10 +6,19 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 02 Apr 2020 16:12:33 -0400</lastBuildDate>
+    <lastBuildDate>Fri, 03 Apr 2020 00:27:12 -0400</lastBuildDate>
     
 	<atom:link href="https://emptyheap2019.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How to Preserve Object Order from PHP to Javascript</title>
+      <link>https://emptyheap2019.github.io/posts/preserve-object-element-order-php-javascript/</link>
+      <pubDate>Fri, 03 Apr 2020 00:27:12 -0400</pubDate>
+      
+      <guid>https://emptyheap2019.github.io/posts/preserve-object-element-order-php-javascript/</guid>
+      <description>In PHP we use an array as both a vector and a hashmap (or dict).</description>
+    </item>
     
     <item>
       <title>How to Strip HTML Tags but Keep their Text</title>
@@ -18,15 +27,6 @@
       
       <guid>https://emptyheap2019.github.io/posts/strip-html-keep-text/</guid>
       <description>Let&amp;rsquo;s consider the following problem. We have some HTML which comes from user-input.</description>
-    </item>
-    
-    <item>
-      <title>How to Preserve Object Order from PHP to Javascript</title>
-      <link>https://emptyheap2019.github.io/posts/preserve-object-element-order-php-javascript/</link>
-      <pubDate>Thu, 02 Apr 2020 03:27:12 -0400</pubDate>
-      
-      <guid>https://emptyheap2019.github.io/posts/preserve-object-element-order-php-javascript/</guid>
-      <description>In PHP we use an array as both a vector and a hashmap (or dict).</description>
     </item>
     
     <item>
