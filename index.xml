@@ -21,6 +21,15 @@
     </item>
     
     <item>
+      <title>How to Preserve Object Order from PHP to Javascript</title>
+      <link>https://emptyheap2019.github.io/posts/preserve-object-element-order-php-javascript/</link>
+      <pubDate>Thu, 02 Apr 2020 03:27:12 -0400</pubDate>
+      
+      <guid>https://emptyheap2019.github.io/posts/preserve-object-element-order-php-javascript/</guid>
+      <description>In PHP we use an array as both a vector and a hashmap (or dict).</description>
+    </item>
+    
+    <item>
       <title>How to Parse Words in PHP</title>
       <link>https://emptyheap2019.github.io/posts/parse-words-php/</link>
       <pubDate>Mon, 30 Mar 2020 00:22:28 -0400</pubDate>
