@@ -164,12 +164,13 @@ I'm second
 I'm third
 </code></pre>
 <p>So how do we fix this problem? Well, since arrays in Javascript preserve order just fine, and objects do not, we could simply create an array of objects to ensure the right order. So the following code in PHP should do it.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">$json = [];
-foreach($arr as $key =&gt; $value) {
-    $json[] = [$key =&gt; $value];
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+$json <span style="color:#f92672">=</span> [];
+<span style="color:#66d9ef">foreach</span>($arr <span style="color:#66d9ef">as</span> $key <span style="color:#f92672">=&gt;</span> $value) {
+    $json[] <span style="color:#f92672">=</span> [$key <span style="color:#f92672">=&gt;</span> $value];
 }
 
-echo json_encode($json, JSON_PRETTY_PRINT);
+<span style="color:#66d9ef">echo</span> <span style="color:#a6e22e">json_encode</span>($json, <span style="color:#a6e22e">JSON_PRETTY_PRINT</span>);
 </code></pre></div><p>Now, we get something like this.</p>
 <pre><code>[
     {
