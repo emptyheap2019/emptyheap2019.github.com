@@ -132,190 +132,193 @@
 <p>This problem isn&rsquo;t as simple as it appears at first. Because in order to remove specific HTML elements from the DOM tree, but keep the text inside them we would have to recursively search the DOM tree, find the unwated nodes, retain their text nodes, remove them from the tree, and insert the text nodes back into the removed node&rsquo;s parent.</p>
 <h2 id="walking-the-dom-tree-depth-first-in-order-recursion">Walking the DOM Tree (Depth-First In Order Recursion)</h2>
 <p>To do this in a more straight-forward fashion I&rsquo;m simply going to implement a generator that extends <code>DOMDocument</code>, which can search the tree using <strong>Depth-First In Order Traversal</strong>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">    class HTMLFixer extends DOMDocument {
-        public function walk(DOMNode $node, $skipParent = false) {
-            if (!$skipParent) {
-                yield $node;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">    <span style="color:#75715e">&lt;?php</span>
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HTMLFixer</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">DOMDocument</span> {
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">walk</span>(<span style="color:#a6e22e">DOMNode</span> $node, $skipParent <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>) {
+            <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>$skipParent) {
+                <span style="color:#66d9ef">yield</span> $node;
             }
-            if ($node-&gt;hasChildNodes()) {
-                foreach ($node-&gt;childNodes as $n) {
-                    yield from $this-&gt;walk($n);
+            <span style="color:#66d9ef">if</span> ($node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">hasChildNodes</span>()) {
+                <span style="color:#66d9ef">foreach</span> ($node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">childNodes</span> <span style="color:#66d9ef">as</span> $n) {
+                    <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">from</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">walk</span>($n);
                 }
             }
         }
     }
 </code></pre></div><p>Next we need a way to find the unwanted nodes and remove them without discarding their text. The simplest way to do this is to build a list of tags to be removed from inside the recursion loop and then remove them later using <code>DOMNode::insertBefore()</code> to append the text nodes back up the tree. That way we can remove those nodes later <em>without</em> any side effects.</p>
 <p>To do this let&rsquo;s add a general <code>stripTags()</code> method to our extended <code>HTMLFixer</code> class above.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">    public function stripTags(DOMNode $node) {
-        $change = $remove = [];
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">    <span style="color:#75715e">&lt;?php</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">stripTags</span>(<span style="color:#a6e22e">DOMNode</span> $node) {
+        $change <span style="color:#f92672">=</span> $remove <span style="color:#f92672">=</span> [];
 
-        /* Walk the entire tree to build a list of things that need removed */
-        foreach($this-&gt;walk($node) as $n) {
-            if ($n instanceof DOMText || $n instanceof DOMDocument) {
-                continue;
+        <span style="color:#75715e">/* Walk the entire tree to build a list of things that need removed */</span>
+        <span style="color:#66d9ef">foreach</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">walk</span>($node) <span style="color:#66d9ef">as</span> $n) {
+            <span style="color:#66d9ef">if</span> ($n <span style="color:#a6e22e">instanceof</span> <span style="color:#a6e22e">DOMText</span> <span style="color:#f92672">||</span> $n <span style="color:#a6e22e">instanceof</span> <span style="color:#a6e22e">DOMDocument</span>) {
+                <span style="color:#66d9ef">continue</span>;
             }
-            $this-&gt;stripAttributes($n); // strips all node attributes not allowed
-            $this-&gt;forceAttributes($n); // forces any required attributes
-            if (!in_array($n-&gt;nodeName, $this-&gt;allowedTags, true)) {
-                // track the disallowed node for removal
-                $remove[] = $n;
-                // we take all of its child nodes for modification later
-                foreach($n-&gt;childNodes as $child) {
-                    $change[] = [$child, $n];
+            $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">stripAttributes</span>($n); <span style="color:#75715e">// strips all node attributes not allowed
+</span><span style="color:#75715e"></span>            $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">forceAttributes</span>($n); <span style="color:#75715e">// forces any required attributes
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">in_array</span>($n<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">nodeName</span>, $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">allowedTags</span>, <span style="color:#66d9ef">true</span>)) {
+                <span style="color:#75715e">// track the disallowed node for removal
+</span><span style="color:#75715e"></span>                $remove[] <span style="color:#f92672">=</span> $n;
+                <span style="color:#75715e">// we take all of its child nodes for modification later
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">foreach</span>($n<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">childNodes</span> <span style="color:#66d9ef">as</span> $child) {
+                    $change[] <span style="color:#f92672">=</span> [$child, $n];
                 }
             }
         }
 
-        /* Go through the list of changes first so we don&#39;t break the
-           referential integrity of the tree */
-        foreach($change as list($a, $b)) {
-            $b-&gt;parentNode-&gt;insertBefore($a, $b);
+        <span style="color:#75715e">/* Go through the list of changes first so we don&#39;t break the
+</span><span style="color:#75715e">           referential integrity of the tree */</span>
+        <span style="color:#66d9ef">foreach</span>($change <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">list</span>($a, $b)) {
+            $b<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">parentNode</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">insertBefore</span>($a, $b);
         }
 
-        /* Now we can safely remove the old nodes */
-        foreach($remove as $a) {
-            if ($a-&gt;parentNode) {
-                $a-&gt;parentNode-&gt;removeChild($a);
+        <span style="color:#75715e">/* Now we can safely remove the old nodes */</span>
+        <span style="color:#66d9ef">foreach</span>($remove <span style="color:#66d9ef">as</span> $a) {
+            <span style="color:#66d9ef">if</span> ($a<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">parentNode</span>) {
+                $a<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">parentNode</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">removeChild</span>($a);
             }
         }
     }
 </code></pre></div><p>Deferring the move of the node makes sure we don&rsquo;t break <code>parentNode</code> reference when the deeper node is the one that&rsquo;s allowed, but its parent is not in the allowed tags list for example.</p>
 <p>Here&rsquo;s the complete solution.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">    class HTMLFixer extends DOMDocument {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">    <span style="color:#75715e">&lt;?php</span>
+    <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HTMLFixer</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">DOMDocument</span> {
     
-        protected static $defaultAllowedTags = [
-            &#39;p&#39;,
-            &#39;h1&#39;,
-            &#39;h2&#39;,
-            &#39;h3&#39;,
-            &#39;h4&#39;,
-            &#39;h5&#39;,
-            &#39;h6&#39;,
-            &#39;pre&#39;,
-            &#39;code&#39;,
-            &#39;blockquote&#39;,
-            &#39;q&#39;,
-            &#39;strong&#39;,
-            &#39;em&#39;,
-            &#39;del&#39;,
-            &#39;img&#39;,
-            &#39;a&#39;,
-            &#39;table&#39;,
-            &#39;thead&#39;,
-            &#39;tbody&#39;,
-            &#39;tfoot&#39;,
-            &#39;tr&#39;,
-            &#39;th&#39;,
-            &#39;td&#39;,
-            &#39;ul&#39;,
-            &#39;ol&#39;,
-            &#39;li&#39;,
+        <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">static</span> $defaultAllowedTags <span style="color:#f92672">=</span> [
+            <span style="color:#e6db74">&#39;p&#39;</span>,
+            <span style="color:#e6db74">&#39;h1&#39;</span>,
+            <span style="color:#e6db74">&#39;h2&#39;</span>,
+            <span style="color:#e6db74">&#39;h3&#39;</span>,
+            <span style="color:#e6db74">&#39;h4&#39;</span>,
+            <span style="color:#e6db74">&#39;h5&#39;</span>,
+            <span style="color:#e6db74">&#39;h6&#39;</span>,
+            <span style="color:#e6db74">&#39;pre&#39;</span>,
+            <span style="color:#e6db74">&#39;code&#39;</span>,
+            <span style="color:#e6db74">&#39;blockquote&#39;</span>,
+            <span style="color:#e6db74">&#39;q&#39;</span>,
+            <span style="color:#e6db74">&#39;strong&#39;</span>,
+            <span style="color:#e6db74">&#39;em&#39;</span>,
+            <span style="color:#e6db74">&#39;del&#39;</span>,
+            <span style="color:#e6db74">&#39;img&#39;</span>,
+            <span style="color:#e6db74">&#39;a&#39;</span>,
+            <span style="color:#e6db74">&#39;table&#39;</span>,
+            <span style="color:#e6db74">&#39;thead&#39;</span>,
+            <span style="color:#e6db74">&#39;tbody&#39;</span>,
+            <span style="color:#e6db74">&#39;tfoot&#39;</span>,
+            <span style="color:#e6db74">&#39;tr&#39;</span>,
+            <span style="color:#e6db74">&#39;th&#39;</span>,
+            <span style="color:#e6db74">&#39;td&#39;</span>,
+            <span style="color:#e6db74">&#39;ul&#39;</span>,
+            <span style="color:#e6db74">&#39;ol&#39;</span>,
+            <span style="color:#e6db74">&#39;li&#39;</span>,
         ];
-        protected static $defaultAllowedAttributes = [
-            &#39;a&#39;   =&gt; [&#39;href&#39;],
-            &#39;img&#39; =&gt; [&#39;src&#39;],
-            &#39;pre&#39; =&gt; [&#39;class&#39;],
+        <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">static</span> $defaultAllowedAttributes <span style="color:#f92672">=</span> [
+            <span style="color:#e6db74">&#39;a&#39;</span>   <span style="color:#f92672">=&gt;</span> [<span style="color:#e6db74">&#39;href&#39;</span>],
+            <span style="color:#e6db74">&#39;img&#39;</span> <span style="color:#f92672">=&gt;</span> [<span style="color:#e6db74">&#39;src&#39;</span>],
+            <span style="color:#e6db74">&#39;pre&#39;</span> <span style="color:#f92672">=&gt;</span> [<span style="color:#e6db74">&#39;class&#39;</span>],
         ];
-        protected static $defaultForceAttributes = [
-            &#39;a&#39; =&gt; [&#39;target&#39; =&gt; &#39;_blank&#39;],
+        <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">static</span> $defaultForceAttributes <span style="color:#f92672">=</span> [
+            <span style="color:#e6db74">&#39;a&#39;</span> <span style="color:#f92672">=&gt;</span> [<span style="color:#e6db74">&#39;target&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;_blank&#39;</span>],
         ];
 
-        protected $allowedTags       = [];
-        protected $allowedAttributes = [];
-        protected $forceAttributes   = [];
+        <span style="color:#66d9ef">protected</span> $allowedTags       <span style="color:#f92672">=</span> [];
+        <span style="color:#66d9ef">protected</span> $allowedAttributes <span style="color:#f92672">=</span> [];
+        <span style="color:#66d9ef">protected</span> $forceAttributes   <span style="color:#f92672">=</span> [];
 
-        public function __construct($version = null, $encoding = null, $allowedTags = [],
-                                    $allowedAttributes = [], $forceAttributes = []) {
-            $this-&gt;setAllowedTags($allowedTags ?: static::$defaultAllowedTags);
-            $this-&gt;setAllowedAttributes($allowedAttributes ?: static::$defaultAllowedAttributes);
-            $this-&gt;setForceAttributes($forceAttributes ?: static::$defaultForceAttributes);
-            parent::__construct($version, $encoding);
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> __construct($version <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>, $encoding <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>, $allowedTags <span style="color:#f92672">=</span> [],
+                                    $allowedAttributes <span style="color:#f92672">=</span> [], $forceAttributes <span style="color:#f92672">=</span> []) {
+            $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">setAllowedTags</span>($allowedTags <span style="color:#f92672">?:</span> <span style="color:#66d9ef">static</span><span style="color:#f92672">::</span>$defaultAllowedTags);
+            $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">setAllowedAttributes</span>($allowedAttributes <span style="color:#f92672">?:</span> <span style="color:#66d9ef">static</span><span style="color:#f92672">::</span>$defaultAllowedAttributes);
+            $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">setForceAttributes</span>($forceAttributes <span style="color:#f92672">?:</span> <span style="color:#66d9ef">static</span><span style="color:#f92672">::</span>$defaultForceAttributes);
+            <span style="color:#66d9ef">parent</span><span style="color:#f92672">::</span><span style="color:#a6e22e">__construct</span>($version, $encoding);
         }
 
-        public function setAllowedTags(Array $tags) {
-            $this-&gt;allowedTags = $tags;
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">setAllowedTags</span>(<span style="color:#66d9ef">Array</span> $tags) {
+            $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">allowedTags</span> <span style="color:#f92672">=</span> $tags;
         }
 
-        public function setAllowedAttributes(Array $attributes) {
-            $this-&gt;allowedAttributes = $attributes;
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">setAllowedAttributes</span>(<span style="color:#66d9ef">Array</span> $attributes) {
+            $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">allowedAttributes</span> <span style="color:#f92672">=</span> $attributes;
         }
 
-        public function setForceAttributes(Array $attributes) {
-            $this-&gt;forceAttributes = $attributes;
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">setForceAttributes</span>(<span style="color:#66d9ef">Array</span> $attributes) {
+            $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">forceAttributes</span> <span style="color:#f92672">=</span> $attributes;
         }
 
-        public function getAllowedTags() {
-            return $this-&gt;allowedTags;
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getAllowedTags</span>() {
+            <span style="color:#66d9ef">return</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">allowedTags</span>;
         }
 
-        public function getAllowedAttributes() {
-            return $this-&gt;allowedAttributes;
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getAllowedAttributes</span>() {
+            <span style="color:#66d9ef">return</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">allowedAttributes</span>;
         }
 
-        public function getForceAttributes() {
-            return $this-&gt;forceAttributes;
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getForceAttributes</span>() {
+            <span style="color:#66d9ef">return</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">forceAttributes</span>;
         }
 
-        public function saveHTML(DOMNode $node = null) {
-            if (!$node) {
-                $node = $this;
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">saveHTML</span>(<span style="color:#a6e22e">DOMNode</span> $node <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>) {
+            <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>$node) {
+                $node <span style="color:#f92672">=</span> $this;
             }
-            $this-&gt;stripTags($node);
-            return parent::saveHTML($node);
+            $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">stripTags</span>($node);
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">parent</span><span style="color:#f92672">::</span><span style="color:#a6e22e">saveHTML</span>($node);
         }
 
-        protected function stripTags(DOMNode $node) {
-            $change = $remove = [];
-            foreach($this-&gt;walk($node) as $n) {
-                if ($n instanceof DOMText || $n instanceof DOMDocument) {
-                    continue;
+        <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">stripTags</span>(<span style="color:#a6e22e">DOMNode</span> $node) {
+            $change <span style="color:#f92672">=</span> $remove <span style="color:#f92672">=</span> [];
+            <span style="color:#66d9ef">foreach</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">walk</span>($node) <span style="color:#66d9ef">as</span> $n) {
+                <span style="color:#66d9ef">if</span> ($n <span style="color:#a6e22e">instanceof</span> <span style="color:#a6e22e">DOMText</span> <span style="color:#f92672">||</span> $n <span style="color:#a6e22e">instanceof</span> <span style="color:#a6e22e">DOMDocument</span>) {
+                    <span style="color:#66d9ef">continue</span>;
                 }
-                $this-&gt;stripAttributes($n);
-                $this-&gt;forceAttributes($n);
-                if (!in_array($n-&gt;nodeName, $this-&gt;allowedTags, true)) {
-                    $remove[] = $n;
-                    foreach($n-&gt;childNodes as $child) {
-                        $change[] = [$child, $n];
+                $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">stripAttributes</span>($n);
+                $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">forceAttributes</span>($n);
+                <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">in_array</span>($n<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">nodeName</span>, $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">allowedTags</span>, <span style="color:#66d9ef">true</span>)) {
+                    $remove[] <span style="color:#f92672">=</span> $n;
+                    <span style="color:#66d9ef">foreach</span>($n<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">childNodes</span> <span style="color:#66d9ef">as</span> $child) {
+                        $change[] <span style="color:#f92672">=</span> [$child, $n];
                     }
                 }
             }
-            foreach($change as list($a, $b)) {
-                $b-&gt;parentNode-&gt;insertBefore($a, $b);
+            <span style="color:#66d9ef">foreach</span>($change <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">list</span>($a, $b)) {
+                $b<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">parentNode</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">insertBefore</span>($a, $b);
             }
-            foreach($remove as $a) {
-                if ($a-&gt;parentNode) {
-                    $a-&gt;parentNode-&gt;removeChild($a);
+            <span style="color:#66d9ef">foreach</span>($remove <span style="color:#66d9ef">as</span> $a) {
+                <span style="color:#66d9ef">if</span> ($a<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">parentNode</span>) {
+                    $a<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">parentNode</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">removeChild</span>($a);
                 }
             }
         }
 
-        protected function stripAttributes(DOMNode $node) {
-            $attributes = $node-&gt;attributes;
-            $len = $attributes-&gt;length;
-            for ($i = $len - 1; $i &gt;= 0; $i--) {
-                $attr = $attributes-&gt;item($i);
-                if (!isset($this-&gt;allowedAttributes[$node-&gt;nodeName]) ||
-                    !in_array($attr-&gt;name, $this-&gt;allowedAttributes[$node-&gt;nodeName], true)) {
-                    $node-&gt;removeAttributeNode($attr);
+        <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">stripAttributes</span>(<span style="color:#a6e22e">DOMNode</span> $node) {
+            $attributes <span style="color:#f92672">=</span> $node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">attributes</span>;
+            $len <span style="color:#f92672">=</span> $attributes<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">length</span>;
+            <span style="color:#66d9ef">for</span> ($i <span style="color:#f92672">=</span> $len <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; $i <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>; $i<span style="color:#f92672">--</span>) {
+                $attr <span style="color:#f92672">=</span> $attributes<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">item</span>($i);
+                <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">isset</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">allowedAttributes</span>[$node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">nodeName</span>]) <span style="color:#f92672">||</span>
+                    <span style="color:#f92672">!</span><span style="color:#a6e22e">in_array</span>($attr<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">name</span>, $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">allowedAttributes</span>[$node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">nodeName</span>], <span style="color:#66d9ef">true</span>)) {
+                    $node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">removeAttributeNode</span>($attr);
                 }
             }
         }
 
-        protected function forceAttributes(DOMNode $node) {
-            if (isset($this-&gt;forceAttributes[$node-&gt;nodeName])) {
-                foreach ($this-&gt;forceAttributes[$node-&gt;nodeName] as $attribute =&gt; $value) {
-                    $node-&gt;setAttribute($attribute, $value);
+        <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">forceAttributes</span>(<span style="color:#a6e22e">DOMNode</span> $node) {
+            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">isset</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">forceAttributes</span>[$node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">nodeName</span>])) {
+                <span style="color:#66d9ef">foreach</span> ($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">forceAttributes</span>[$node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">nodeName</span>] <span style="color:#66d9ef">as</span> $attribute <span style="color:#f92672">=&gt;</span> $value) {
+                    $node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">setAttribute</span>($attribute, $value);
                 }
             }
         }
 
-        protected function walk(DOMNode $node, $skipParent = false) {
-            if (!$skipParent) {
-                yield $node;
+        <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">walk</span>(<span style="color:#a6e22e">DOMNode</span> $node, $skipParent <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>) {
+            <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>$skipParent) {
+                <span style="color:#66d9ef">yield</span> $node;
             }
-            if ($node-&gt;hasChildNodes()) {
-                foreach ($node-&gt;childNodes as $n) {
-                    yield from $this-&gt;walk($n);
+            <span style="color:#66d9ef">if</span> ($node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">hasChildNodes</span>()) {
+                <span style="color:#66d9ef">foreach</span> ($node<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">childNodes</span> <span style="color:#66d9ef">as</span> $n) {
+                    <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">from</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">walk</span>($n);
                 }
             }
         }
