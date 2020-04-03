@@ -132,199 +132,196 @@
 <p>This problem isn&rsquo;t as simple as it appears at first. Because in order to remove specific HTML elements from the DOM tree, but keep the text inside them we would have to recursively search the DOM tree, find the unwated nodes, retain their text nodes, remove them from the tree, and insert the text nodes back into the removed node&rsquo;s parent.</p>
 <h2 id="walking-the-dom-tree-depth-first-in-order-recursion">Walking the DOM Tree (Depth-First In Order Recursion)</h2>
 <p>To do this in a more straight-forward fashion I&rsquo;m simply going to implement a generator that extends <code>DOMDocument</code>, which can search the tree using <strong>Depth-First In Order Traversal</strong>.</p>
-<pre><code>class HTMLFixer extends DOMDocument {
-    public function walk(DOMNode $node, $skipParent = false) {
-        if (!$skipParent) {
-            yield $node;
-        }
-        if ($node-&gt;hasChildNodes()) {
-            foreach ($node-&gt;childNodes as $n) {
-                yield from $this-&gt;walk($n);
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">    class HTMLFixer extends DOMDocument {
+        public function walk(DOMNode $node, $skipParent = false) {
+            if (!$skipParent) {
+                yield $node;
+            }
+            if ($node-&gt;hasChildNodes()) {
+                foreach ($node-&gt;childNodes as $n) {
+                    yield from $this-&gt;walk($n);
+                }
             }
         }
     }
-}
-</code></pre>
-<p>Next we need a way to find the unwanted nodes and remove them without discarding their text. The simplest way to do this is to build a list of tags to be removed from inside the recursion loop and then remove them later using <code>DOMNode::insertBefore()</code> to append the text nodes back up the tree. That way we can remove those nodes later <em>without</em> any side effects.</p>
+</code></pre></div><p>Next we need a way to find the unwanted nodes and remove them without discarding their text. The simplest way to do this is to build a list of tags to be removed from inside the recursion loop and then remove them later using <code>DOMNode::insertBefore()</code> to append the text nodes back up the tree. That way we can remove those nodes later <em>without</em> any side effects.</p>
 <p>To do this let&rsquo;s add a general <code>stripTags()</code> method to our extended <code>HTMLFixer</code> class above.</p>
-<pre><code>public function stripTags(DOMNode $node) {
-    $change = $remove = [];
-
-    /* Walk the entire tree to build a list of things that need removed */
-    foreach($this-&gt;walk($node) as $n) {
-        if ($n instanceof DOMText || $n instanceof DOMDocument) {
-            continue;
-        }
-        $this-&gt;stripAttributes($n); // strips all node attributes not allowed
-        $this-&gt;forceAttributes($n); // forces any required attributes
-        if (!in_array($n-&gt;nodeName, $this-&gt;allowedTags, true)) {
-            // track the disallowed node for removal
-            $remove[] = $n;
-            // we take all of its child nodes for modification later
-            foreach($n-&gt;childNodes as $child) {
-                $change[] = [$child, $n];
-            }
-        }
-    }
-
-    /* Go through the list of changes first so we don't break the
-       referential integrity of the tree */
-    foreach($change as list($a, $b)) {
-        $b-&gt;parentNode-&gt;insertBefore($a, $b);
-    }
-
-    /* Now we can safely remove the old nodes */
-    foreach($remove as $a) {
-        if ($a-&gt;parentNode) {
-            $a-&gt;parentNode-&gt;removeChild($a);
-        }
-    }
-}
-</code></pre>
-<p>Deferring the move of the node makes sure we don&rsquo;t break <code>parentNode</code> reference when the deeper node is the one that&rsquo;s allowed, but its parent is not in the allowed tags list for example.</p>
-<p>Here&rsquo;s the complete solution.</p>
-<pre><code>class HTMLFixer extends DOMDocument {
-
-    protected static $defaultAllowedTags = [
-        'p',
-        'h1',
-        'h2',
-        'h3',
-        'h4',
-        'h5',
-        'h6',
-        'pre',
-        'code',
-        'blockquote',
-        'q',
-        'strong',
-        'em',
-        'del',
-        'img',
-        'a',
-        'table',
-        'thead',
-        'tbody',
-        'tfoot',
-        'tr',
-        'th',
-        'td',
-        'ul',
-        'ol',
-        'li',
-    ];
-    protected static $defaultAllowedAttributes = [
-        'a'   =&gt; ['href'],
-        'img' =&gt; ['src'],
-        'pre' =&gt; ['class'],
-    ];
-    protected static $defaultForceAttributes = [
-        'a' =&gt; ['target' =&gt; '_blank'],
-    ];
-
-    protected $allowedTags       = [];
-    protected $allowedAttributes = [];
-    protected $forceAttributes   = [];
-
-    public function __construct($version = null, $encoding = null, $allowedTags = [],
-                                $allowedAttributes = [], $forceAttributes = []) {
-        $this-&gt;setAllowedTags($allowedTags ?: static::$defaultAllowedTags);
-        $this-&gt;setAllowedAttributes($allowedAttributes ?: static::$defaultAllowedAttributes);
-        $this-&gt;setForceAttributes($forceAttributes ?: static::$defaultForceAttributes);
-        parent::__construct($version, $encoding);
-    }
-
-    public function setAllowedTags(Array $tags) {
-        $this-&gt;allowedTags = $tags;
-    }
-
-    public function setAllowedAttributes(Array $attributes) {
-        $this-&gt;allowedAttributes = $attributes;
-    }
-
-    public function setForceAttributes(Array $attributes) {
-        $this-&gt;forceAttributes = $attributes;
-    }
-
-    public function getAllowedTags() {
-        return $this-&gt;allowedTags;
-    }
-
-    public function getAllowedAttributes() {
-        return $this-&gt;allowedAttributes;
-    }
-
-    public function getForceAttributes() {
-        return $this-&gt;forceAttributes;
-    }
-
-    public function saveHTML(DOMNode $node = null) {
-        if (!$node) {
-            $node = $this;
-        }
-        $this-&gt;stripTags($node);
-        return parent::saveHTML($node);
-    }
-
-    protected function stripTags(DOMNode $node) {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">    public function stripTags(DOMNode $node) {
         $change = $remove = [];
+
+        /* Walk the entire tree to build a list of things that need removed */
         foreach($this-&gt;walk($node) as $n) {
             if ($n instanceof DOMText || $n instanceof DOMDocument) {
                 continue;
             }
-            $this-&gt;stripAttributes($n);
-            $this-&gt;forceAttributes($n);
+            $this-&gt;stripAttributes($n); // strips all node attributes not allowed
+            $this-&gt;forceAttributes($n); // forces any required attributes
             if (!in_array($n-&gt;nodeName, $this-&gt;allowedTags, true)) {
+                // track the disallowed node for removal
                 $remove[] = $n;
+                // we take all of its child nodes for modification later
                 foreach($n-&gt;childNodes as $child) {
                     $change[] = [$child, $n];
                 }
             }
         }
+
+        /* Go through the list of changes first so we don&#39;t break the
+           referential integrity of the tree */
         foreach($change as list($a, $b)) {
             $b-&gt;parentNode-&gt;insertBefore($a, $b);
         }
+
+        /* Now we can safely remove the old nodes */
         foreach($remove as $a) {
             if ($a-&gt;parentNode) {
                 $a-&gt;parentNode-&gt;removeChild($a);
             }
         }
     }
+</code></pre></div><p>Deferring the move of the node makes sure we don&rsquo;t break <code>parentNode</code> reference when the deeper node is the one that&rsquo;s allowed, but its parent is not in the allowed tags list for example.</p>
+<p>Here&rsquo;s the complete solution.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">    class HTMLFixer extends DOMDocument {
+    
+        protected static $defaultAllowedTags = [
+            &#39;p&#39;,
+            &#39;h1&#39;,
+            &#39;h2&#39;,
+            &#39;h3&#39;,
+            &#39;h4&#39;,
+            &#39;h5&#39;,
+            &#39;h6&#39;,
+            &#39;pre&#39;,
+            &#39;code&#39;,
+            &#39;blockquote&#39;,
+            &#39;q&#39;,
+            &#39;strong&#39;,
+            &#39;em&#39;,
+            &#39;del&#39;,
+            &#39;img&#39;,
+            &#39;a&#39;,
+            &#39;table&#39;,
+            &#39;thead&#39;,
+            &#39;tbody&#39;,
+            &#39;tfoot&#39;,
+            &#39;tr&#39;,
+            &#39;th&#39;,
+            &#39;td&#39;,
+            &#39;ul&#39;,
+            &#39;ol&#39;,
+            &#39;li&#39;,
+        ];
+        protected static $defaultAllowedAttributes = [
+            &#39;a&#39;   =&gt; [&#39;href&#39;],
+            &#39;img&#39; =&gt; [&#39;src&#39;],
+            &#39;pre&#39; =&gt; [&#39;class&#39;],
+        ];
+        protected static $defaultForceAttributes = [
+            &#39;a&#39; =&gt; [&#39;target&#39; =&gt; &#39;_blank&#39;],
+        ];
 
-    protected function stripAttributes(DOMNode $node) {
-        $attributes = $node-&gt;attributes;
-        $len = $attributes-&gt;length;
-        for ($i = $len - 1; $i &gt;= 0; $i--) {
-            $attr = $attributes-&gt;item($i);
-            if (!isset($this-&gt;allowedAttributes[$node-&gt;nodeName]) ||
-                !in_array($attr-&gt;name, $this-&gt;allowedAttributes[$node-&gt;nodeName], true)) {
-                $node-&gt;removeAttributeNode($attr);
+        protected $allowedTags       = [];
+        protected $allowedAttributes = [];
+        protected $forceAttributes   = [];
+
+        public function __construct($version = null, $encoding = null, $allowedTags = [],
+                                    $allowedAttributes = [], $forceAttributes = []) {
+            $this-&gt;setAllowedTags($allowedTags ?: static::$defaultAllowedTags);
+            $this-&gt;setAllowedAttributes($allowedAttributes ?: static::$defaultAllowedAttributes);
+            $this-&gt;setForceAttributes($forceAttributes ?: static::$defaultForceAttributes);
+            parent::__construct($version, $encoding);
+        }
+
+        public function setAllowedTags(Array $tags) {
+            $this-&gt;allowedTags = $tags;
+        }
+
+        public function setAllowedAttributes(Array $attributes) {
+            $this-&gt;allowedAttributes = $attributes;
+        }
+
+        public function setForceAttributes(Array $attributes) {
+            $this-&gt;forceAttributes = $attributes;
+        }
+
+        public function getAllowedTags() {
+            return $this-&gt;allowedTags;
+        }
+
+        public function getAllowedAttributes() {
+            return $this-&gt;allowedAttributes;
+        }
+
+        public function getForceAttributes() {
+            return $this-&gt;forceAttributes;
+        }
+
+        public function saveHTML(DOMNode $node = null) {
+            if (!$node) {
+                $node = $this;
+            }
+            $this-&gt;stripTags($node);
+            return parent::saveHTML($node);
+        }
+
+        protected function stripTags(DOMNode $node) {
+            $change = $remove = [];
+            foreach($this-&gt;walk($node) as $n) {
+                if ($n instanceof DOMText || $n instanceof DOMDocument) {
+                    continue;
+                }
+                $this-&gt;stripAttributes($n);
+                $this-&gt;forceAttributes($n);
+                if (!in_array($n-&gt;nodeName, $this-&gt;allowedTags, true)) {
+                    $remove[] = $n;
+                    foreach($n-&gt;childNodes as $child) {
+                        $change[] = [$child, $n];
+                    }
+                }
+            }
+            foreach($change as list($a, $b)) {
+                $b-&gt;parentNode-&gt;insertBefore($a, $b);
+            }
+            foreach($remove as $a) {
+                if ($a-&gt;parentNode) {
+                    $a-&gt;parentNode-&gt;removeChild($a);
+                }
             }
         }
-    }
 
-    protected function forceAttributes(DOMNode $node) {
-        if (isset($this-&gt;forceAttributes[$node-&gt;nodeName])) {
-            foreach ($this-&gt;forceAttributes[$node-&gt;nodeName] as $attribute =&gt; $value) {
-                $node-&gt;setAttribute($attribute, $value);
+        protected function stripAttributes(DOMNode $node) {
+            $attributes = $node-&gt;attributes;
+            $len = $attributes-&gt;length;
+            for ($i = $len - 1; $i &gt;= 0; $i--) {
+                $attr = $attributes-&gt;item($i);
+                if (!isset($this-&gt;allowedAttributes[$node-&gt;nodeName]) ||
+                    !in_array($attr-&gt;name, $this-&gt;allowedAttributes[$node-&gt;nodeName], true)) {
+                    $node-&gt;removeAttributeNode($attr);
+                }
             }
         }
-    }
 
-    protected function walk(DOMNode $node, $skipParent = false) {
-        if (!$skipParent) {
-            yield $node;
-        }
-        if ($node-&gt;hasChildNodes()) {
-            foreach ($node-&gt;childNodes as $n) {
-                yield from $this-&gt;walk($n);
+        protected function forceAttributes(DOMNode $node) {
+            if (isset($this-&gt;forceAttributes[$node-&gt;nodeName])) {
+                foreach ($this-&gt;forceAttributes[$node-&gt;nodeName] as $attribute =&gt; $value) {
+                    $node-&gt;setAttribute($attribute, $value);
+                }
             }
         }
+
+        protected function walk(DOMNode $node, $skipParent = false) {
+            if (!$skipParent) {
+                yield $node;
+            }
+            if ($node-&gt;hasChildNodes()) {
+                foreach ($node-&gt;childNodes as $n) {
+                    yield from $this-&gt;walk($n);
+                }
+            }
+        }
+    
     }
-
-}
-</code></pre>
-
+</code></pre></div>
 </div>
 
 
