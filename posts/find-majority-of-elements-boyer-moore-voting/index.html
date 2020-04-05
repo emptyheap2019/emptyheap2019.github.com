@@ -128,25 +128,46 @@
     <time datetime="2020-04-05T02:24:33-0400">Apr 5, 2020</time> · 2 min read
   </div>
 
-  <p>Let&rsquo;s imagine that we have a string with an arbitrary number of characters. Each character in the string represents a vote for a specific class. We want to find the class that has the majority vote. This means any character which makes up more than 50% of the string. However, the challenge is to do this in linear time and constant space. Such that we do not consume more than <code>O(n)</code> time and no more than <code>O(n)</code> space to solve the problem.</p>
+  <p>Let&rsquo;s imagine that we have a string with an arbitrary number of characters. Each character in the string represents a vote for a specific class. We want to find the class that has the majority vote. This means any character which makes up more than 50% of the string. However, the challenge is to do this in linear time and constant space. So we want to achieve <code>O(n)</code> in both time and space complexity.</p>
 <p>We can achieve this using the <a href="https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_majority_vote_algorithm">Boyer–Moore majority vote algorithm</a>. Here&rsquo;s a simple implementation of this algorithm in PHP.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
-<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">mostCommonCharacter</span>(<span style="color:#a6e22e">String</span> $input) {
-    $n <span style="color:#f92672">=</span> <span style="color:#a6e22e">strlen</span>($input);
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">majorityElement</span>(<span style="color:#a6e22e">String</span> $input) {
+    $count <span style="color:#f92672">=</span> $candidate <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    $length <span style="color:#f92672">=</span> <span style="color:#a6e22e">strlen</span>($input);
+    $j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
     
-    <span style="color:#66d9ef">for</span> ($i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; $i <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">intdiv</span>($n, <span style="color:#ae81ff">2</span>); $i<span style="color:#f92672">++</span>) {
-        $count <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-        <span style="color:#66d9ef">for</span> ($j <span style="color:#f92672">=</span> $i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>; $j <span style="color:#f92672">&lt;</span> $n; $j<span style="color:#f92672">++</span>) {
-            <span style="color:#66d9ef">if</span> ($input[$j] <span style="color:#f92672">==</span> $input[$i]) {
+    <span style="color:#66d9ef">for</span> ($i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; $i <span style="color:#f92672">&lt;</span> $length; $i<span style="color:#f92672">++</span>) {
+        $j<span style="color:#f92672">++</span>;
+        <span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">$j\n</span><span style="color:#e6db74">&#34;</span>;
+        <span style="color:#66d9ef">if</span> ($count <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+            $candidate <span style="color:#f92672">=</span> $input[$i];
+            $count <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+            <span style="color:#66d9ef">continue</span>;
+        } <span style="color:#66d9ef">elseif</span> ($candidate <span style="color:#f92672">==</span> $input[$i]) {
+            $count<span style="color:#f92672">++</span>;
+        } <span style="color:#66d9ef">else</span> {
+            $count<span style="color:#f92672">--</span>;
+        }
+    }
+    
+    <span style="color:#66d9ef">if</span> ($count <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+    } <span style="color:#66d9ef">else</span> {
+        $count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+        <span style="color:#66d9ef">for</span> ($i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; $i <span style="color:#f92672">&lt;</span> $length; $i<span style="color:#f92672">++</span>) {
+            $j<span style="color:#f92672">++</span>;
+            <span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">$j\n</span><span style="color:#e6db74">&#34;</span>;
+            <span style="color:#66d9ef">if</span> ($candidate <span style="color:#f92672">==</span> $input[$i]) {
                 $count<span style="color:#f92672">++</span>;
             }
         }
         
-        <span style="color:#66d9ef">if</span> ($count <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">intdiv</span>($n, <span style="color:#ae81ff">2</span>)) {
-            <span style="color:#66d9ef">return</span> $input[$i];
+        <span style="color:#66d9ef">if</span> ($count <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">intdiv</span>($length, <span style="color:#ae81ff">2</span>)) {
+            <span style="color:#66d9ef">return</span> $candidate;
         }
     }
-    
+
     <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
 }
 </code></pre></div><p>So given the string <code>&quot;ACBCDCECFCCGCCCH&quot;</code> this function would return <code>&quot;C&quot;</code> since this character appears more than 50% of the time throughout the string. There are a total of 16 characters in the string and the character <code>&quot;C&quot;</code> appears exactly 9 times, which constitutes 56.25% of the length of the string (<code>9 / 16 = 0.5625</code>). The function will return <code>false</code> if no majority is found.</p>
