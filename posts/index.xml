@@ -6,10 +6,19 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 03 Apr 2020 00:27:12 -0400</lastBuildDate>
+    <lastBuildDate>Sun, 05 Apr 2020 02:24:33 -0400</lastBuildDate>
     
 	<atom:link href="https://emptyheap2019.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Find Majority of Elements in a String using PHP (*Boyer-Moore Majority Vote Algorithm*)</title>
+      <link>https://emptyheap2019.github.io/posts/find-majority-of-elements-boyer-moore-voting/</link>
+      <pubDate>Sun, 05 Apr 2020 02:24:33 -0400</pubDate>
+      
+      <guid>https://emptyheap2019.github.io/posts/find-majority-of-elements-boyer-moore-voting/</guid>
+      <description>Let&amp;rsquo;s imagine that we have a string with an arbitrary number of characters.</description>
+    </item>
     
     <item>
       <title>How to Preserve Object Order from PHP to Javascript</title>
