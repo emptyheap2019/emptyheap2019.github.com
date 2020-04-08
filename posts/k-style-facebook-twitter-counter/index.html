@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Hugo 0.68.3" />
 
-  <title>My Blog</title>
+  <title>How to make a K-Style Facebook/Twitter Counter in PHP &middot; My Blog</title>
 
-  <meta name="description" content="Hi, welcome to the place where I write stuff on the Internet!" />
+  <meta name="description" content="" />
 
   
   <meta property="og:locale" content="en-us"/>
@@ -17,10 +17,9 @@
 
   
   <meta property="og:type" content="blog"/>
-  <meta property="og:site_name" content="My Blog"/>
-  <meta property="og:title" content="My Blog"/>
-  <meta property="og:url" content="https://emptyheap2019.github.io/"/>
-  <meta property="og:description" content="Hi, welcome to the place where I write stuff on the Internet!"/>
+  <meta property="og:site_name" content="My Blog"/><meta property="og:title" content="How to make a K-Style Facebook/Twitter Counter in PHP"/>
+  <meta property="og:url" content="https://emptyheap2019.github.io/posts/k-style-facebook-twitter-counter/"/>
+  <meta property="og:description" content="The idea here is that want numbers to only be represented by a base of thousands."/>
 
   <script type="application/ld+json">
   {
@@ -69,7 +68,6 @@
   <link rel="shortcut icon" href="/favicon.png">
 
   
-  <link href="https://emptyheap2019.github.io/index.xml" rel="alternate" type="application/rss+xml" title="My Blog" />
   </head>
 <body>
   <aside class="sidebar">
@@ -123,40 +121,36 @@
 
 
   <main class="content container">
-  
-    <main aria-role="main">
-      <header class="homepage-header">
-        <h1></h1>
-        
-      </header>
-      <div class="homepage-content">
-        
-        <h1 id="welcome-to-my-blog">Welcome to my Blog!</h1>
-<p>Data goes in the <code>data/bin</code> for now.</p>
+  <div class="post">
+  <h1>How to make a K-Style Facebook/Twitter Counter in PHP</h1>
 
-      </div>
-      <div>
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-      </div>
-    </main>
+  <div class="post-date">
+    <time datetime="2020-04-08T19:00:59-0400">Apr 8, 2020</time> · 1 min read
+  </div>
+
+  <p>The idea here is that want numbers to only be represented by a base of thousands. This means 1,000 becomes <strong>1K</strong>, 1,000,000 becomes <strong>1M</strong> and so on. This is similar to how Facebook share buttons display share or like counts as well as Twitter buttons. To implement this we will need to rely on the <a href="https://www.php.net/log"><code>log()</code></a> function.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">function shortNumbers(Int $number) {
+    if ($number &lt; <span style="color:#f92672">1000</span><span style="color:#960050;background-color:#1e0010">)</span> <span style="color:#960050;background-color:#1e0010">{</span>
+        <span style="color:#a6e22e">return</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">number</span><span style="color:#960050;background-color:#1e0010">;</span>
+    <span style="color:#960050;background-color:#1e0010">}</span>
+    
+    <span style="color:#a6e22e">if</span> <span style="color:#960050;background-color:#1e0010">($</span><span style="color:#a6e22e">number</span> &gt; 999999999999999) {
+        throw new Exception(&#34;Number is too large!&#34;);
+    }
+
+    $orders = [&#39;&#39;, &#39;K&#39;, &#39;M&#39;, &#39;B&#39;, &#39;T&#39;];
+    
+    $order = log($number, 1000);
+    $magnitude = (int) $order;
+    $size = rtrim(sprintf(&#39;%.1f&#39;, (1000 ** $order) / (1000 ** $magnitude)), &#39;0.&#39;);
+    return sprintf(&#34;%s%s&#34;, $size, $orders[$magnitude]);
+}
+
+var_dump(shortNumbers(1100)); // gives you 1.1K
+var_dump(shortNumbers(1000)); // gives you 1K
+</code></pre></div>
+</div>
+
 
   </main>
 

@@ -6,10 +6,19 @@
     <description>Recent content in Posts on My Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 06 Apr 2020 02:40:06 -0400</lastBuildDate>
+    <lastBuildDate>Wed, 08 Apr 2020 19:00:59 -0400</lastBuildDate>
     
 	<atom:link href="https://emptyheap2019.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>How to make a K-Style Facebook/Twitter Counter in PHP</title>
+      <link>https://emptyheap2019.github.io/posts/k-style-facebook-twitter-counter/</link>
+      <pubDate>Wed, 08 Apr 2020 19:00:59 -0400</pubDate>
+      
+      <guid>https://emptyheap2019.github.io/posts/k-style-facebook-twitter-counter/</guid>
+      <description>The idea here is that want numbers to only be represented by a base of thousands.</description>
+    </item>
     
     <item>
       <title>Programming is Magic and I am a Magician</title>
