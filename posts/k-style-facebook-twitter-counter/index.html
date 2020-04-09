@@ -129,27 +129,33 @@
   </div>
 
   <p>The idea here is that want numbers to only be represented by a base of thousands. This means 1,000 becomes <strong>1K</strong>, 1,000,000 becomes <strong>1M</strong> and so on. This is similar to how Facebook share buttons display share or like counts as well as Twitter buttons. To implement this we will need to rely on the <a href="https://www.php.net/log"><code>log()</code></a> function.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
-<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">shortNumbers</span>(<span style="color:#a6e22e">Int</span> $number) {
-    <span style="color:#66d9ef">if</span> ($number <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1000</span>) {
-        <span style="color:#66d9ef">return</span> $number;
-    }
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">function shortNumbers(Int $number): String {
+    if ($number &lt; <span style="color:#f92672">1000</span><span style="color:#960050;background-color:#1e0010">)</span> <span style="color:#960050;background-color:#1e0010">{</span>
+        <span style="color:#a6e22e">return</span> <span style="color:#960050;background-color:#1e0010">(</span><span style="color:#a6e22e">string</span><span style="color:#960050;background-color:#1e0010">)</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">number</span><span style="color:#960050;background-color:#1e0010">;</span>
+    <span style="color:#960050;background-color:#1e0010">}</span>
     
-    <span style="color:#66d9ef">if</span> ($number <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">999999999999999</span>) {
-        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Exception</span>(<span style="color:#e6db74">&#34;Number is too large!&#34;</span>);
+    <span style="color:#a6e22e">if</span> <span style="color:#960050;background-color:#1e0010">($</span><span style="color:#a6e22e">number</span> &gt; 999999999999999) {
+        throw new Exception(&#34;Number is too large!&#34;);
     }
 
-    $orders <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;K&#39;</span>, <span style="color:#e6db74">&#39;M&#39;</span>, <span style="color:#e6db74">&#39;B&#39;</span>, <span style="color:#e6db74">&#39;T&#39;</span>];
+    $orders = [&#39;&#39;, &#39;K&#39;, &#39;M&#39;, &#39;B&#39;, &#39;T&#39;];
     
-    $order <span style="color:#f92672">=</span> <span style="color:#a6e22e">log</span>($number, <span style="color:#ae81ff">1000</span>);
-    $magnitude <span style="color:#f92672">=</span> (<span style="color:#a6e22e">int</span>) $order;
-    $size <span style="color:#f92672">=</span> <span style="color:#a6e22e">rtrim</span>(<span style="color:#a6e22e">sprintf</span>(<span style="color:#e6db74">&#39;%.1f&#39;</span>, (<span style="color:#ae81ff">1000</span> <span style="color:#f92672">**</span> $order) <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1000</span> <span style="color:#f92672">**</span> $magnitude)), <span style="color:#e6db74">&#39;0.&#39;</span>);
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sprintf</span>(<span style="color:#e6db74">&#34;%s%s&#34;</span>, $size, $orders[$magnitude]);
-}
+    $order     = log($number, 1000);
+    $magnitude = (int) $order;
+    $float     = (1000 ** $order) / (1000 ** $magnitude);
+    $n         = $float &lt; <span style="color:#f92672">100</span> <span style="color:#960050;background-color:#1e0010">?</span> <span style="color:#a6e22e">1</span> <span style="color:#a6e22e">:</span> <span style="color:#a6e22e">0</span><span style="color:#960050;background-color:#1e0010">;</span>
+    <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">size      </span><span style="color:#f92672">=</span> <span style="color:#e6db74">sprintf(&#34;%.{$n}f&#34;,</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">float</span><span style="color:#960050;background-color:#1e0010">);</span>
+    
+    <span style="color:#a6e22e">if</span> <span style="color:#960050;background-color:#1e0010">(</span><span style="color:#a6e22e">strpos</span><span style="color:#960050;background-color:#1e0010">($</span><span style="color:#a6e22e">size</span><span style="color:#960050;background-color:#1e0010">,</span> <span style="color:#960050;background-color:#1e0010">&#39;.&#39;)</span> <span style="color:#960050;background-color:#1e0010">!==</span> <span style="color:#a6e22e">false</span><span style="color:#960050;background-color:#1e0010">)</span> <span style="color:#960050;background-color:#1e0010">{</span>
+        <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">size </span><span style="color:#f92672">=</span> <span style="color:#e6db74">rtrim($size,</span> <span style="color:#960050;background-color:#1e0010">&#39;</span><span style="color:#a6e22e">0</span><span style="color:#960050;background-color:#1e0010">&#39;);</span>
+        <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">size </span><span style="color:#f92672">=</span> <span style="color:#e6db74">rtrim($size,</span> <span style="color:#960050;background-color:#1e0010">&#39;.&#39;);</span>
+    <span style="color:#960050;background-color:#1e0010">}</span>
 
-<span style="color:#a6e22e">var_dump</span>(<span style="color:#a6e22e">shortNumbers</span>(<span style="color:#ae81ff">1100</span>)); <span style="color:#75715e">// gives you 1.1K
-</span><span style="color:#75715e"></span><span style="color:#a6e22e">var_dump</span>(<span style="color:#a6e22e">shortNumbers</span>(<span style="color:#ae81ff">1000</span>)); <span style="color:#75715e">// gives you 1K
-</span></code></pre></div>
+    <span style="color:#a6e22e">return</span> <span style="color:#a6e22e">sprintf</span><span style="color:#960050;background-color:#1e0010">(&#34;%</span><span style="color:#a6e22e">s</span><span style="color:#960050;background-color:#1e0010">%</span><span style="color:#a6e22e">s</span><span style="color:#960050;background-color:#1e0010">&#34;,</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">size</span><span style="color:#960050;background-color:#1e0010">,</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#a6e22e">orders</span><span style="color:#960050;background-color:#1e0010">[$</span><span style="color:#a6e22e">magnitude</span><span style="color:#960050;background-color:#1e0010">]);</span>
+<span style="color:#960050;background-color:#1e0010">}</span>
+
+<span style="color:#a6e22e">echo</span> <span style="color:#a6e22e">shortNumbers</span><span style="color:#960050;background-color:#1e0010">(</span><span style="color:#a6e22e">123724</span><span style="color:#960050;background-color:#1e0010">);</span> <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#a6e22e">124K</span>
+</code></pre></div>
 </div>
 
 
