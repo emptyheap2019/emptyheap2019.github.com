@@ -156,12 +156,12 @@ $input <span style="color:#f92672">=</span> <span style="color:#a6e22e">array_in
 
 <span style="color:#75715e">// You can now just do this...
 </span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">filter_var</span>($input[<span style="color:#960050;background-color:#1e0010">&#39;</span><span style="color:#a6e22e">Email</span><span style="color:#e6db74">&#34;])) {
-</span><span style="color:#e6db74">    // success!
-</span><span style="color:#e6db74">} else {
-</span><span style="color:#e6db74">    // &lt;&lt;SadFace.gif&gt;&gt;&gt;
-</span><span style="color:#e6db74">}
-</span></code></pre></div><p>Now in cases where the input is expected to be an array of variable length we can only sanely initialize the variable as an empty array.</p>
+<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">filter_var</span>($input[<span style="color:#e6db74">&#34;Email&#34;</span>])) {
+    <span style="color:#75715e">// success!
+</span><span style="color:#75715e"></span>} <span style="color:#66d9ef">else</span> {
+    <span style="color:#75715e">// &lt;&lt;SadFace.gif&gt;&gt;&gt;
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>Now in cases where the input is expected to be an array of variable length we can only sanely initialize the variable as an empty array.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
 $defaults <span style="color:#f92672">=</span> [
     <span style="color:#e6db74">&#34;Name&#34;</span>    <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#34;&#34;</span>,
